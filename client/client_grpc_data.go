@@ -119,6 +119,26 @@ func (c *grpcClient) Insert(ctx context.Context, collName string, partitionName 
 	return entity.IDColumns(resp.GetIDs(), 0, -1)
 }
 
+func (c *grpcClient) Delete(ctx context.Context, collName string, partitionName string, expr string) (int64, error) {
+	if c.service == nil {
+		return 0, ErrClientNotReady
+	}
+	if err := c.checkCollectionExists(ctx, collName); err != nil {
+		return 0, err
+	}
+	req := &server.DeleteRequest{
+		DbName:          "", //reserved,
+		CollectionName: collName,
+		Expr: expr,
+	}
+	result, err := c.service.Delete(ctx, req)
+	if err != nil {
+		return 0, err
+	}
+	return result.DeleteCnt, nil
+}
+
+
 // Flush force collection to flush memory records into storage
 // in sync mode, flush will wait all segments to be flushed
 func (c *grpcClient) Flush(ctx context.Context, collName string, async bool) error {
