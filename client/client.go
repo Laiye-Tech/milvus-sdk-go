@@ -82,6 +82,9 @@ type Client interface {
 
 	// Insert column-based data into collection, returns id column values
 	Insert(ctx context.Context, collName string, partitionName string, columns ...entity.Column) (entity.Column, error)
+
+	Delete(ctx context.Context, collName string, partitionName string, expr string) (int64, error)
+
 	// Flush flush collection, specified
 	Flush(ctx context.Context, collName string, async bool) error
 	// Search search with bool expression
